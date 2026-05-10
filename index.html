@@ -4,35 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nature Reframe</title>
+  <!-- Ensure style.css is in the same folder as this file -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
   <div class="app-container">
 
-    <!-- HEADER -->
     <header class="header">
       <div class="status-bar">
         <span class="pulse"></span>
-        <span id="community-count">
-          14,202 souls breathing with you
-        </span>
+        <span id="community-count">14,202 souls breathing with you</span>
       </div>
       <h1>Nature Reframe</h1>
-      <p class="subtitle">
-        A safe place to breathe, release, and heal.
-      </p>
+      <p class="subtitle">A safe place to breathe, release, and heal.</p>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="main-content">
-
-      <!-- Garden Section -->
+      <!-- Garden -->
       <section class="garden-section">
         <div class="garden-area" id="garden"></div>
       </section>
 
-      <!-- AI RESPONSE (Result of the Reframe) -->
+      <!-- AI RESPONSE -->
       <section id="ai-response-container" class="ai-response hidden">
         <div class="ai-card">
           <h3>Nature Reflection</h3>
@@ -40,50 +34,40 @@
         </div>
       </section>
 
-      <!-- Interaction Card -->
+      <!-- Interaction -->
       <section class="interaction-card">
         <h2 id="mood-prompt">What is weighing on your heart?</h2>
-        
         <div class="mood-chips">
           <button class="chip" data-mood="angry">Anger</button>
           <button class="chip" data-mood="stressed">Stress</button>
           <button class="chip" data-mood="lonely">Loneliness</button>
           <button class="chip" data-mood="anxious">Anxiety</button>
         </div>
-
         <textarea id="thought-input" placeholder="Release your thought into the soil..."></textarea>
-        
-        <button id="release-btn" class="btn-primary">
-          Plant & Release
-        </button>
+        <button id="release-btn" class="btn-primary">Plant & Release</button>
       </section>
 
-      <!-- Breathing Section -->
+      <!-- Breathing -->
       <section class="breathing-section">
         <h3>Breathe Slowly</h3>
         <div class="breathing-circle">Breathe</div>
       </section>
-
     </main>
 
-    <!-- Calm/Emergency Button -->
     <button id="calm-btn">Calm</button>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-tabs">
       <button class="tab-item active">🌿</button>
       <button class="tab-item">🎵</button>
       <button class="tab-item">✨</button>
       <button class="tab-item">📓</button>
     </nav>
-
   </div>
 
-  <!-- MOOD AUDIO ELEMENT (Hidden, controlled by app.js) -->
+  <!-- Music element for Mood-based audio -->
   <audio id="bg-music" loop></audio>
 
-  <!-- MAIN SCRIPT (Module type is required for AI SDK imports) -->
+  <!-- IMPORTANT: Must be type="module" for the AI SDK to work -->
   <script type="module" src="app.js"></script>
-
 </body>
 </html>
