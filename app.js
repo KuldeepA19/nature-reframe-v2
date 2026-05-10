@@ -61,3 +61,34 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
+async function releaseThought() {
+    const input = document.getElementById('thought-input');
+    const aiText = document.getElementById('ai-text');
+    const aiContainer = document.getElementById('ai-response-container');
+    const thought = input.value.trim();
+
+    if (!thought) return alert("Share your heart with the earth first.");
+
+    // 1. Show Loading State
+    aiContainer.className = "ai-box-visible";
+    aiText.innerText = "The earth is listening to your words...";
+    
+    // 2. Plant the emoji immediately
+    const flora = ['🌱', '🌿', '🌸', '🌻', '🍀'];
+    myGarden.push(flora[Math.floor(Math.random() * flora.length)]);
+    localStorage.setItem('natureGarden', JSON.stringify(myGarden));
+    renderGarden();
+
+    // 3. Simulated AI Reframing (We will swap this for the API next)
+    // This "Reframes" the thought using nature metaphors
+    setTimeout(() => {
+        const reframes = [
+            "Like a winter storm, this feeling is passing. You are clearing space for new growth.",
+            "Even the strongest oaks bend in the wind. Your resilience is your roots.",
+            "The forest does not rush, yet everything is accomplished. Be patient with your healing.",
+            "You have planted this heavy thought. Now, let the soil transform it into peace."
+        ];
+        aiText.innerText = reframes[Math.floor(Math.random() * reframes.length)];
+        input.value = ""; // Clear input
+    }, 2000);
+}
