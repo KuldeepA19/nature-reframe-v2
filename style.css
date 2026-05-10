@@ -127,3 +127,17 @@ textarea {
 }
 
 .tab-item { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+.ai-box-hidden { display: none; }
+
+.ai-box-visible {
+    display: block;
+    background: #f0f7f0;
+    border-left: 4px solid var(--sage);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: fadeIn 1s ease-in;
+}
