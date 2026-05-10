@@ -17,11 +17,10 @@
         </header>
 
         <main id="screen-container">
-            <!-- The Garden -->
             <div class="garden-area" id="garden"></div>
 
-            <!-- The Interaction Sanctuary -->
             <section class="interaction">
+                <!-- This is the AI Box that will appear when user plants -->
                 <div id="ai-response-container" class="ai-box-hidden">
                     <p id="ai-text"></p>
                 </div>
@@ -35,15 +34,14 @@
                 </div>
 
                 <textarea id="thought-input" placeholder="Release your thought into the soil..."></textarea>
-                
                 <button class="btn-primary" onclick="releaseThought()">Plant & Release</button>
             </section>
         </main>
 
         <nav class="bottom-tabs">
             <div class="tab-item active">🌿</div>
-            <div class="tab-item" onclick="alert('Ambient sounds coming in v3')">🎵</div>
-            <div class="tab-item" onclick="alert('AI Deep Chat coming in v3')">✨</div>
+            <div class="tab-item">🎵</div>
+            <div class="tab-item">✨</div>
         </nav>
     </div>
     <script src="app.js"></script>
