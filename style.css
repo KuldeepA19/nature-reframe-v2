@@ -1,0 +1,129 @@
+:root {
+    --sage: #6b8e23;
+    --forest: #2d4739;
+    --cream: #fdfaf5;
+    --clay: #a68966;
+    --shadow: rgba(0,0,0,0.05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background-color: #f0f2f0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    color: var(--forest);
+}
+
+.app-shell {
+    width: 100%;
+    max-width: 430px;
+    height: 100vh;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 50px var(--shadow);
+}
+
+header {
+    padding: 30px 20px 10px;
+    text-align: center;
+}
+
+.status-bar {
+    font-size: 0.75rem;
+    color: var(--sage);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.pulse {
+    width: 8px;
+    height: 8px;
+    background: var(--sage);
+    border-radius: 50%;
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0% { transform: scale(0.95); opacity: 0.9; }
+    70% { transform: scale(1.5); opacity: 0; }
+    100% { transform: scale(0.95); opacity: 0; }
+}
+
+.garden-area {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 15px;
+    padding: 40px;
+    font-size: 3rem;
+    background: linear-gradient(to bottom, transparent, rgba(107, 142, 35, 0.05));
+}
+
+.interaction {
+    padding: 20px;
+    background: white;
+    border-radius: 30px 30px 0 0;
+    box-shadow: 0 -10px 30px var(--shadow);
+}
+
+h2 { font-size: 1.1rem; margin-bottom: 15px; text-align: center; }
+
+.mood-chips {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.chip {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    background: var(--cream);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.3s;
+}
+
+.chip:hover { background: var(--sage); color: white; }
+
+textarea {
+    width: 100%;
+    height: 100px;
+    border: 1px solid #eee;
+    border-radius: 15px;
+    padding: 15px;
+    font-size: 1rem;
+    resize: none;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 18px;
+    background: var(--forest);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.bottom-tabs {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #f5f5f5;
+}
+
+.tab-item { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
