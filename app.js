@@ -1,24 +1,23 @@
-
 /* IMPORT GOOGLE AI SDK */
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-/* CONFIGURATION - PUT YOUR API KEY HERE */AIzaSyDbbutdBcWJbIDLo9uTqgJHKHYNYt-12F0
-const API_KEY = "YOUR_ACTUAL_GOOGLE_AI_STUDIO_KEY"; 
+/* CONFIGURATION */
+const API_KEY = "AIzaSyDbbutdBcWJbIDLo9uTqgJHKHYNYt-12F0"; // Your Key Integrated
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const flora = ["🌱", "🌿", "🌸", "🌻", "🍀", "🌳"];
 
+/* MUSIC MAPPING */
+const moodMusic = {
+  angry: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", 
+  stressed: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+  lonely: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+  anxious: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+};
+
 /* APP STATE */
 let selectedMood = "";
 let myGarden = [];
-
-/* SAFE LOCAL STORAGE LOAD */
-try {
-  const savedGarden = localStorage.getItem("natureGarden");
-  myGarden = savedGarden ? JSON.parse(savedGarden) : [];
-} catch (error) {
-  myGarden = [];
-}
 
 /* DOM ELEMENTS */
 const gardenDiv = document.getElementById("garden");
@@ -29,13 +28,39 @@ const aiText = document.getElementById("ai-text");
 const releaseBtn = document.getElementById("release-btn");
 const calmBtn = document.getElementById("calm-btn");
 const chips = document.querySelectorAll(".chip");
+const audioPlayer = document.getElementById("bg-music");
 
 /* INITIALIZE APP */
 window.addEventListener("DOMContentLoaded", () => {
+  loadGarden();
   renderGarden();
   initializeMoodButtons();
   initializeCalmButton();
+  initializeTabs();
 });
+
+/* LOCAL STORAGE */
+function loadGarden() {
+  try {
+    const savedGarden = localStorage.getItem("natureGarden");
+    myGarden = savedGarden ? JSON.parse(savedGarden) : [];
+  } catch (error) {
+    myGarden = [];
+  }
+}
+
+function saveGarden() {
+  localStorage.setItem("natureGarden", JSON.stringify(myGarden));
+}
+
+/* MUSIC LOGIC */
+function playMoodMusic(mood) {
+  if (moodMusic[mood] && audioPlayer) {
+    audioPlayer.src = moodMusic[mood];
+    audioPlayer.volume = 0.4; 
+    audioPlayer.play().catch(e => console.log("Waiting for user interaction to play audio..."));
+  }
+}
 
 /* MOOD BUTTONS */
 function initializeMoodButtons() {
@@ -43,8 +68,10 @@ function initializeMoodButtons() {
     chip.addEventListener("click", () => {
       chips.forEach((c) => c.classList.remove("active"));
       chip.classList.add("active");
+      
       selectedMood = chip.dataset.mood;
       updateMoodPrompt(selectedMood);
+      playMoodMusic(selectedMood); // Play music based on mood
     });
   });
 }
@@ -59,7 +86,9 @@ function updateMoodPrompt(mood) {
   moodPrompt.innerText = prompts[mood] || "What is weighing on your heart?";
 }
 
+/* GARDEN RENDERING */
 function renderGarden() {
+  if (!gardenDiv) return;
   gardenDiv.innerHTML = "";
   myGarden.slice(-8).forEach((plant) => {
     const span = document.createElement("span");
@@ -68,7 +97,7 @@ function renderGarden() {
   });
 }
 
-/* RELEASE THOUGHT (UPDATED WITH REAL AI) */
+/* RELEASE THOUGHT (AI LOGIC) */
 releaseBtn.addEventListener("click", releaseThought);
 
 async function releaseThought() {
@@ -91,35 +120,29 @@ async function releaseThought() {
   renderGarden();
 
   try {
-    /* CALL REAL GEMINI AI */
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
-    const prompt = `The user is feeling ${selectedMood || 'thoughtful'} and shared this: "${thought}". 
-    Act as a gentle nature guide. Reframe their stressor using a nature metaphor. 
-    Be brief (1-2 sentences), comforting, and poetic.`;
+    const prompt = `The user is feeling ${selectedMood || 'thoughtful'} and shared: "${thought}". 
+    Act as a gentle nature guide. Reframe their stress into a brief, poetic nature metaphor (1-2 sentences). 
+    Focus on healing and peace.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
 
-    /* Display the result with the typewriter effect */
     typeWriterEffect(text);
-    
     input.value = "";
 
   } catch (error) {
     console.error("AI Error:", error);
-    typeWriterEffect("The wind carries your words away safely. Breathe deep; the earth hears you even in silence.");
+    typeWriterEffect("The wind carries your words away safely. Breathe deep; you are heard.");
   } finally {
     releaseBtn.disabled = false;
     releaseBtn.innerText = "Plant & Release";
   }
 }
 
-function saveGarden() {
-  localStorage.setItem("natureGarden", JSON.stringify(myGarden));
-}
-
+/* UI EFFECTS */
 function showAIMessage(message) {
   aiContainer.classList.remove("hidden");
   aiText.innerText = message;
@@ -138,17 +161,27 @@ function typeWriterEffect(text) {
   }, 25);
 }
 
-/* CALM BUTTON & NAVIGATION */
+/* CALM MODE */
 function initializeCalmButton() {
-  calmBtn.addEventListener("click", activateCalmMode);
+  if (!calmBtn) return;
+  calmBtn.addEventListener("click", () => {
+    document.body.style.transition = "background 1.5s ease";
+    document.body.style.background = "#dff6e4";
+    showAIMessage("🌿 Inhale... Exhale... You are grounded. You are safe.");
+    navigator.vibrate?.(100);
+    setTimeout(() => { document.body.style.background = "#f0f2f0"; }, 5000);
+  });
 }
 
-function activateCalmMode() {
-  document.body.style.transition = "background 1s ease";
-  document.body.style.background = "#dff6e4";
-  showAIMessage("🌿 Inhale slowly for 4 seconds. Hold gently. Exhale softly. You are safe in this moment.");
-  navigator.vibrate?.(100);
-  setTimeout(() => { document.body.style.background = "#f0f2f0"; }, 4000);
+/* NAVIGATION & HELPERS */
+function initializeTabs() {
+  const tabs = document.querySelectorAll(".tab-item");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+    });
+  });
 }
 
 input.addEventListener("keydown", (event) => {
@@ -156,12 +189,4 @@ input.addEventListener("keydown", (event) => {
     event.preventDefault();
     releaseThought();
   }
-});
-
-const tabs = document.querySelectorAll(".tab-item");
-tabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    tabs.forEach((t) => t.classList.remove("active"));
-    tab.classList.add("active");
-  });
 });
