@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Reframe | Digital Sanctuary</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header>
+            <div class="status-bar">
+                <span class="pulse"></span> 
+                <span id="community-count">14,202 people breathing with you</span>
+            </div>
+            <h1>Nature Reframe</h1>
+        </header>
+
+        <main id="screen-container">
+            <!-- Garden Section -->
+            <div class="garden-area" id="garden">
+                <!-- Plants will appear here -->
+            </div>
+
+            <!-- Interaction Section -->
+            <section class="interaction">
+                <h2 id="mood-prompt">What is weighing on your heart?</h2>
+                
+                <div class="mood-chips">
+                    <button class="chip" onclick="updateMood('angry', '🔥 Let the anger flow into the soil...')">Anger</button>
+                    <button class="chip" onclick="updateMood('stressed', '🌊 Breathe. What is overwhelming you?')">Stress</button>
+                    <button class="chip" onclick="updateMood('lonely', '🍃 We are here. Who do you miss?')">Loneliness</button>
+                </div>
+
+                <textarea id="thought-input" placeholder="Type your thought to release it..."></textarea>
+                
+                <button class="btn-primary" onclick="releaseThought()">Plant & Release</button>
+            </section>
+        </main>
+
+        <nav class="bottom-tabs">
+            <button class="tab-item" onclick="alert('Garden View')">🌿</button>
+            <button class="tab-item" onclick="alert('Music coming soon!')">🎵</button>
+            <button class="tab-item" onclick="alert('AI Insights coming soon!')">✨</button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
