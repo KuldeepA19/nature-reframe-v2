@@ -1,13 +1,16 @@
-/* IMPORT GOOGLE AI SDK */
+/* 
+  Nature Reframe v2 - Core Logic
+  Professional Build
+*/
+
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-/* CONFIGURATION */
-const API_KEY ="AIzaSyDbbutdBcWJbIDLo9uTqgJHKHYNYt-12F0";// Your Key Integrated
+// CONFIGURATION
+const API_KEY = "AIzaSyDbbutdBcWJbIDLo9uTqgJHKHYNYt-12F0"; 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const flora = ["🌱", "🌿", "🌸", "🌻", "🍀", "🌳"];
 
-/* MUSIC MAPPING */
 const moodMusic = {
   angry: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", 
   stressed: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
@@ -15,178 +18,153 @@ const moodMusic = {
   anxious: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
 };
 
-/* APP STATE */
+// APP STATE
 let selectedMood = "";
 let myGarden = [];
 
-/* DOM ELEMENTS */
-const gardenDiv = document.getElementById("garden");
-const moodPrompt = document.getElementById("mood-prompt");
-const input = document.getElementById("thought-input");
-const aiContainer = document.getElementById("ai-response-container");
-const aiText = document.getElementById("ai-text");
-const releaseBtn = document.getElementById("release-btn");
-const calmBtn = document.getElementById("calm-btn");
-const chips = document.querySelectorAll(".chip");
-const audioPlayer = document.getElementById("bg-music");
+// DOM ELEMENTS
+const elements = {
+  gardenDiv: document.getElementById("garden"),
+  moodPrompt: document.getElementById("mood-prompt"),
+  input: document.getElementById("thought-input"),
+  aiContainer: document.getElementById("ai-response-container"),
+  aiText: document.getElementById("ai-text"),
+  releaseBtn: document.getElementById("release-btn"),
+  calmBtn: document.getElementById("calm-btn"),
+  chips: document.querySelectorAll(".chip"),
+  audioPlayer: document.getElementById("bg-music"),
+  tabs: document.querySelectorAll(".tab-item")
+};
 
-/* INITIALIZE APP */
+// INITIALIZE
 window.addEventListener("DOMContentLoaded", () => {
+  console.log("Nature Reframe Initialized...");
   loadGarden();
   renderGarden();
-  initializeMoodButtons();
-  initializeCalmButton();
-  initializeTabs();
+  initMoodButtons();
+  initCalmButton();
+  initTabs();
 });
 
-/* LOCAL STORAGE */
+// FUNCTIONS
 function loadGarden() {
   try {
-    const savedGarden = localStorage.getItem("natureGarden");
-    myGarden = savedGarden ? JSON.parse(savedGarden) : [];
-  } catch (error) {
-    myGarden = [];
-  }
+    const saved = localStorage.getItem("natureGarden");
+    myGarden = saved ? JSON.parse(saved) : [];
+  } catch (e) { myGarden = []; }
 }
 
 function saveGarden() {
   localStorage.setItem("natureGarden", JSON.stringify(myGarden));
 }
 
-/* MUSIC LOGIC */
 function playMoodMusic(mood) {
-  if (moodMusic[mood] && audioPlayer) {
-    audioPlayer.src = moodMusic[mood];
-    audioPlayer.volume = 0.4; 
-    audioPlayer.play().catch(e => console.log("Waiting for user interaction to play audio..."));
+  const player = elements.audioPlayer;
+  if (moodMusic[mood] && player) {
+    player.src = moodMusic[mood];
+    player.volume = 0.3; // Professional low-level ambience
+    player.play().catch(() => console.log("Music waiting for user gesture..."));
   }
 }
 
-/* MOOD BUTTONS */
-function initializeMoodButtons() {
-  chips.forEach((chip) => {
+function initMoodButtons() {
+  elements.chips.forEach(chip => {
     chip.addEventListener("click", () => {
-      chips.forEach((c) => c.classList.remove("active"));
+      elements.chips.forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
-      
       selectedMood = chip.dataset.mood;
-      updateMoodPrompt(selectedMood);
-      playMoodMusic(selectedMood); // Play music based on mood
+      
+      // Update UI & Music
+      if(elements.moodPrompt) {
+        const prompts = {
+          angry: "🔥 Let the heat out. What happened?",
+          stressed: "🌊 Breathe slowly. What feels overwhelming?",
+          lonely: "🍃 You are not alone. What is hurting?",
+          anxious: "☁️ What thoughts keep circling your mind?"
+        };
+        elements.moodPrompt.innerText = prompts[selectedMood] || "What is on your heart?";
+      }
+      playMoodMusic(selectedMood);
     });
   });
 }
 
-function updateMoodPrompt(mood) {
-  const prompts = {
-    angry: "🔥 Let the heat out. What happened?",
-    stressed: "🌊 Breathe slowly. What feels overwhelming?",
-    lonely: "🍃 You are not alone. What is hurting?",
-    anxious: "☁️ What thoughts keep circling your mind?"
-  };
-  moodPrompt.innerText = prompts[mood] || "What is weighing on your heart?";
-}
-
-/* GARDEN RENDERING */
-function renderGarden() {
-  if (!gardenDiv) return;
-  gardenDiv.innerHTML = "";
-  myGarden.slice(-8).forEach((plant) => {
-    const span = document.createElement("span");
-    span.innerText = plant;
-    gardenDiv.appendChild(span);
-  });
-}
-
-/* RELEASE THOUGHT (AI LOGIC) */
-releaseBtn.addEventListener("click", releaseThought);
-
 async function releaseThought() {
-  const thought = input.value.trim();
+  const thought = elements.input?.value.trim();
+  if (!thought) return showAIMessage("The earth is waiting for your words...");
 
-  if (!thought) {
-    showAIMessage("The earth is waiting for your words...");
-    return;
+  // UI Feedback
+  if (elements.releaseBtn) {
+    elements.releaseBtn.disabled = true;
+    elements.releaseBtn.innerText = "Planting...";
   }
-
-  /* UI Feedback */
-  releaseBtn.disabled = true;
-  releaseBtn.innerText = "Planting...";
   showAIMessage("🌱 The earth is listening...");
 
-  /* Add plant to garden */
-  const randomPlant = flora[Math.floor(Math.random() * flora.length)];
-  myGarden.push(randomPlant);
+  // Garden Logic
+  myGarden.push(flora[Math.floor(Math.random() * flora.length)]);
   saveGarden();
   renderGarden();
 
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `User is feeling ${selectedMood}. Reframe: "${thought}" into a short, poetic nature metaphor for healing.`;
     
-    const prompt = `The user is feeling ${selectedMood || 'thoughtful'} and shared: "${thought}". 
-    Act as a gentle nature guide. Reframe their stress into a brief, poetic nature metaphor (1-2 sentences). 
-    Focus on healing and peace.`;
-
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-
-    typeWriterEffect(text);
-    input.value = "";
-
-  } catch (error) {
-    console.error("AI Error:", error);
-    typeWriterEffect("The wind carries your words away safely. Breathe deep; you are heard.");
+    typeWriterEffect(result.response.text());
+    if(elements.input) elements.input.value = "";
+  } catch (err) {
+    typeWriterEffect("The wind carries your words away. Breathe deep.");
   } finally {
-    releaseBtn.disabled = false;
-    releaseBtn.innerText = "Plant & Release";
+    if (elements.releaseBtn) {
+      elements.releaseBtn.disabled = false;
+      elements.releaseBtn.innerText = "Plant & Release";
+    }
   }
 }
 
-/* UI EFFECTS */
-function showAIMessage(message) {
-  aiContainer.classList.remove("hidden");
-  aiText.innerText = message;
-}
-
-function typeWriterEffect(text) {
-  aiContainer.classList.remove("hidden");
-  aiText.innerText = "";
-  let index = 0;
-  const interval = setInterval(() => {
-    aiText.innerText += text[index];
-    index++;
-    if (index >= text.length) {
-      clearInterval(interval);
-    }
-  }, 25);
-}
-
-/* CALM MODE */
-function initializeCalmButton() {
-  if (!calmBtn) return;
-  calmBtn.addEventListener("click", () => {
-    document.body.style.transition = "background 1.5s ease";
-    document.body.style.background = "#dff6e4";
-    showAIMessage("🌿 Inhale... Exhale... You are grounded. You are safe.");
-    navigator.vibrate?.(100);
-    setTimeout(() => { document.body.style.background = "#f0f2f0"; }, 5000);
+function renderGarden() {
+  if (!elements.gardenDiv) return;
+  elements.gardenDiv.innerHTML = "";
+  myGarden.slice(-12).forEach(p => {
+    const span = document.createElement("span");
+    span.innerText = p;
+    span.className = "fade-in-plant";
+    elements.gardenDiv.appendChild(span);
   });
 }
 
-/* NAVIGATION & HELPERS */
-function initializeTabs() {
-  const tabs = document.querySelectorAll(".tab-item");
-  tabs.forEach((tab) => {
+function showAIMessage(msg) {
+  elements.aiContainer?.classList.remove("hidden");
+  if(elements.aiText) elements.aiText.innerText = msg;
+}
+
+function typeWriterEffect(text) {
+  if(!elements.aiText) return;
+  elements.aiContainer?.classList.remove("hidden");
+  elements.aiText.innerText = "";
+  let i = 0;
+  const interval = setInterval(() => {
+    elements.aiText.innerText += text[i];
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 30);
+}
+
+function initCalmButton() {
+  elements.calmBtn?.addEventListener("click", () => {
+    document.body.style.backgroundColor = "#dff6e4";
+    showAIMessage("🌿 Inhale... Exhale... You are safe.");
+    setTimeout(() => document.body.style.backgroundColor = "#f0f2f0", 5000);
+  });
+}
+
+function initTabs() {
+  elements.tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      tabs.forEach((t) => t.classList.remove("active"));
+      elements.tabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
     });
   });
 }
 
-input.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    releaseThought();
-  }
-});
+elements.releaseBtn?.addEventListener("click", releaseThought);
