@@ -2,175 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nature Reframe</title>
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-
   <div class="app-container">
 
     <!-- HEADER -->
     <header class="header">
-
       <div class="status-bar">
         <span class="pulse"></span>
-
         <span id="community-count">
           14,202 souls breathing with you
         </span>
       </div>
-
       <h1>Nature Reframe</h1>
-
       <p class="subtitle">
         A safe place to breathe, release, and heal.
       </p>
-
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
-      <!-- Garden -->
+      <!-- Garden Section -->
       <section class="garden-section">
-
         <div class="garden-area" id="garden"></div>
-
       </section>
 
-      <!-- AI RESPONSE -->
-      <section
-        id="ai-response-container"
-        class="ai-response hidden"
-      >
-
+      <!-- AI RESPONSE (Result of the Reframe) -->
+      <section id="ai-response-container" class="ai-response hidden">
         <div class="ai-card">
-
           <h3>Nature Reflection</h3>
-
           <p id="ai-text"></p>
-
         </div>
-
       </section>
 
-      <!-- Mood Input -->
+      <!-- Interaction Card -->
       <section class="interaction-card">
-
-        <h2 id="mood-prompt">
-          What is weighing on your heart?
-        </h2>
-
+        <h2 id="mood-prompt">What is weighing on your heart?</h2>
+        
         <div class="mood-chips">
-
-          <button
-            class="chip"
-            data-mood="angry"
-          >
-            Anger
-          </button>
-
-          <button
-            class="chip"
-            data-mood="stressed"
-          >
-            Stress
-          </button>
-
-          <button
-            class="chip"
-            data-mood="lonely"
-          >
-            Loneliness
-          </button>
-
-          <button
-            class="chip"
-            data-mood="anxious"
-          >
-            Anxiety
-          </button>
-
+          <button class="chip" data-mood="angry">Anger</button>
+          <button class="chip" data-mood="stressed">Stress</button>
+          <button class="chip" data-mood="lonely">Loneliness</button>
+          <button class="chip" data-mood="anxious">Anxiety</button>
         </div>
 
-        <textarea
-          id="thought-input"
-          placeholder="Release your thought into the soil..."
-        ></textarea>
-
-        <button
-          id="release-btn"
-          class="btn-primary"
-        >
+        <textarea id="thought-input" placeholder="Release your thought into the soil..."></textarea>
+        
+        <button id="release-btn" class="btn-primary">
           Plant & Release
         </button>
-
       </section>
 
-      <!-- Music Section -->
-      <section class="music-section">
-
-        <h3>Relax Sounds</h3>
-
-        <audio controls>
-          <source
-            src="music/rain.mp3"
-            type="audio/mp3"
-          />
-        </audio>
-
-      </section>
-
-      <!-- Breathing -->
+      <!-- Breathing Section -->
       <section class="breathing-section">
-
         <h3>Breathe Slowly</h3>
-
-        <div class="breathing-circle">
-          Breathe
-        </div>
-
+        <div class="breathing-circle">Breathe</div>
       </section>
 
     </main>
 
-    <!-- Emergency Button -->
-    <button id="calm-btn">
-      Calm
-    </button>
+    <!-- Calm/Emergency Button -->
+    <button id="calm-btn">Calm</button>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-tabs">
-
-      <button class="tab-item active">
-        🌿
-      </button>
-
-      <button class="tab-item">
-        🎵
-      </button>
-
-      <button class="tab-item">
-        ✨
-      </button>
-
-      <button class="tab-item">
-        📓
-      </button>
-
+      <button class="tab-item active">🌿</button>
+      <button class="tab-item">🎵</button>
+      <button class="tab-item">✨</button>
+      <button class="tab-item">📓</button>
     </nav>
 
   </div>
 
-  <script src="app.js"></script>
+  <!-- MOOD AUDIO ELEMENT (Hidden, controlled by app.js) -->
+  <audio id="bg-music" loop></audio>
+
+  <!-- MAIN SCRIPT (Module type is required for AI SDK imports) -->
+  <script type="module" src="app.js"></script>
 
 </body>
 </html>
