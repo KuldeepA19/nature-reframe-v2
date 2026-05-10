@@ -2,7 +2,7 @@
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
 /* CONFIGURATION */
-const API_KEY = "AIzaSyDbbutdBcWJbIDLo9uTqgJHKHYNYt-12F0"; // Your Key Integrated
+const API_KEY ="AIzaSyDbbutdBcWJbIDLo9uTqgJHKHYNYt-12F0";// Your Key Integrated
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const flora = ["🌱", "🌿", "🌸", "🌻", "🍀", "🌳"];
