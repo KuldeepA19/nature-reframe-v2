@@ -1,49 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nature Reframe | Sanctuary</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Nature Reframe</title>
+
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-    <div class="app-shell">
-        <header>
-            <div class="status-bar">
-                <span class="pulse"></span> 
-                <span id="community-count">14,202 souls breathing with you</span>
-            </div>
-            <h1>Nature Reframe</h1>
-        </header>
 
-        <main id="screen-container">
-            <div class="garden-area" id="garden"></div>
+  <div class="app-container">
 
-            <section class="interaction">
-                <!-- This is the AI Box that will appear when user plants -->
-                <div id="ai-response-container" class="ai-box-hidden">
-                    <p id="ai-text"></p>
-                </div>
+    <!-- HEADER -->
+    <header class="header">
 
-                <h2 id="mood-prompt">What is weighing on your heart?</h2>
-                
-                <div class="mood-chips">
-                    <button class="chip" onclick="updateMood('angry', '🔥 Let the heat out. What happened?')">Anger</button>
-                    <button class="chip" onclick="updateMood('stressed', '🌊 Breathe. What is overwhelming you?')">Stress</button>
-                    <button class="chip" onclick="updateMood('lonely', '🍃 We are here. Who do you miss?')">Loneliness</button>
-                </div>
+      <div class="status-bar">
+        <span class="pulse"></span>
 
-                <textarea id="thought-input" placeholder="Release your thought into the soil..."></textarea>
-                <button class="btn-primary" onclick="releaseThought()">Plant & Release</button>
-            </section>
-        </main>
+        <span id="community-count">
+          14,202 souls breathing with you
+        </span>
+      </div>
 
-        <nav class="bottom-tabs">
-            <div class="tab-item active">🌿</div>
-            <div class="tab-item">🎵</div>
-            <div class="tab-item">✨</div>
-        </nav>
-    </div>
-    <script src="app.js"></script>
+      <h1>Nature Reframe</h1>
+
+      <p class="subtitle">
+        A safe place to breathe, release, and heal.
+      </p>
+
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- Garden -->
+      <section class="garden-section">
+
+        <div class="garden-area" id="garden"></div>
+
+      </section>
+
+      <!-- AI RESPONSE -->
+      <section
+        id="ai-response-container"
+        class="ai-response hidden"
+      >
+
+        <div class="ai-card">
+
+          <h3>Nature Reflection</h3>
+
+          <p id="ai-text"></p>
+
+        </div>
+
+      </section>
+
+      <!-- Mood Input -->
+      <section class="interaction-card">
+
+        <h2 id="mood-prompt">
+          What is weighing on your heart?
+        </h2>
+
+        <div class="mood-chips">
+
+          <button
+            class="chip"
+            data-mood="angry"
+          >
+            Anger
+          </button>
+
+          <button
+            class="chip"
+            data-mood="stressed"
+          >
+            Stress
+          </button>
+
+          <button
+            class="chip"
+            data-mood="lonely"
+          >
+            Loneliness
+          </button>
+
+          <button
+            class="chip"
+            data-mood="anxious"
+          >
+            Anxiety
+          </button>
+
+        </div>
+
+        <textarea
+          id="thought-input"
+          placeholder="Release your thought into the soil..."
+        ></textarea>
+
+        <button
+          id="release-btn"
+          class="btn-primary"
+        >
+          Plant & Release
+        </button>
+
+      </section>
+
+      <!-- Music Section -->
+      <section class="music-section">
+
+        <h3>Relax Sounds</h3>
+
+        <audio controls>
+          <source
+            src="music/rain.mp3"
+            type="audio/mp3"
+          />
+        </audio>
+
+      </section>
+
+      <!-- Breathing -->
+      <section class="breathing-section">
+
+        <h3>Breathe Slowly</h3>
+
+        <div class="breathing-circle">
+          Breathe
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Emergency Button -->
+    <button id="calm-btn">
+      Calm
+    </button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-tabs">
+
+      <button class="tab-item active">
+        🌿
+      </button>
+
+      <button class="tab-item">
+        🎵
+      </button>
+
+      <button class="tab-item">
+        ✨
+      </button>
+
+      <button class="tab-item">
+        📓
+      </button>
+
+    </nav>
+
+  </div>
+
+  <script src="app.js"></script>
+
 </body>
 </html>
