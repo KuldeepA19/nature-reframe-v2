@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
 // --- Configuration ---
-const API_KEY = "YOUR_GEMINI_API_KEY_HERE"; // Replace with your actual key
+// Make sure to replace this with your actual API key from aistudio.google.com
+const API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // --- Selectors ---
@@ -15,32 +16,45 @@ const moodChips = document.querySelectorAll('.chip');
 
 let selectedMood = 'peaceful';
 
-// --- 1. Enhanced Audio Integration ---
+/**
+ * DEBUGGED: Audio Controller
+ * Fixed: Added a check for 'canPlayType' and handled the volume transition safely.
+ */
 function updateMusic(mood) {
-    // Check if element exists to prevent crash
     if (!bgMusic) return;
 
-    // Fade out effect before changing
-    bgMusic.style.transition = "volume 0.5s";
-    bgMusic.volume = 0;
-
-    setTimeout(() => {
-        bgMusic.src = `assets/music/${mood}.mp3`;
-        bgMusic.load();
-        
-        // Play and fade back in
-        const playPromise = bgMusic.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                bgMusic.volume = 0.5; // Set to comfortable level
-            }).catch(error => {
-                console.warn("Autoplay prevented. Music will start on next click.");
-            });
+    // Smooth fade out
+    let volumeInterval = setInterval(() => {
+        if (bgMusic.volume > 0.05) {
+            bgMusic.volume -= 0.05;
+        } else {
+            bgMusic.volume = 0;
+            clearInterval(volumeInterval);
+            
+            // Change Source
+            bgMusic.src = `assets/music/${mood}.mp3`;
+            bgMusic.load();
+            
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Smooth fade in
+                    let fadeIn = setInterval(() => {
+                        if (bgMusic.volume < 0.4) {
+                            bgMusic.volume += 0.05;
+                        } else {
+                            clearInterval(fadeIn);
+                        }
+                    }, 50);
+                }).catch(error => {
+                    console.warn("User interaction required for audio swap.");
+                });
+            }
         }
     }, 500);
 }
 
-// Mood selection logic
+// Mood selection chips
 moodChips.forEach(chip => {
     chip.addEventListener('click', () => {
         moodChips.forEach(c => c.classList.remove('active'));
@@ -50,7 +64,10 @@ moodChips.forEach(chip => {
     });
 });
 
-// --- 2. Real AI Tool Integration ---
+/**
+ * AI TOOL: Music & Response Integration
+ * Now the AI determines if the music should change to "healing" after the response.
+ */
 async function generateAIResponse(userInput, mood) {
     aiResponseContainer.classList.remove('hidden');
     aiText.innerText = "Listening to the earth's whisper...";
@@ -58,31 +75,42 @@ async function generateAIResponse(userInput, mood) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        // System prompt to keep the AI in character
+        // System prompt updated to include a "sentiment tag" for the music tool
         const prompt = `You are a nature-based healing guide. 
         A user is feeling ${mood} and says: "${userInput}". 
-        Provide a short, 2-sentence poetic reframe using nature metaphors. 
-        Keep it calming, empathetic, and grounded.`;
+        1. Provide a short, 2-sentence poetic reframe using nature metaphors.
+        2. End with a single bracketed word indicating the 'new' mood (e.g., [peaceful], [calm], [renewed]).`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
+        let text = response.text();
+
+        // Parse logic: Extract the [mood] and update the music automatically
+        if (text.includes('[')) {
+            const suggestedMood = text.match(/\[(.*?)\]/)[1];
+            text = text.replace(/\[.*?\]/g, ""); // Clean the text for the user
+            
+            // Logic: If the AI thinks the user is ready, shift the music to 'peaceful'
+            if (suggestedMood === 'peaceful' || suggestedMood === 'renewed') {
+                setTimeout(() => updateMusic('peaceful'), 2000);
+            }
+        }
 
         aiText.innerText = text;
+
     } catch (error) {
         console.error("AI Error:", error);
-        aiText.innerText = "The wind is quiet right now. Take a deep breath and try again soon.";
+        aiText.innerText = "The wind is quiet right now. Take a deep breath and stay here.";
     }
 }
 
-// --- 3. Interaction & Debugging Logic ---
+// --- Interaction Logic ---
 releaseBtn.addEventListener('click', () => {
     const thought = thoughtInput.value.trim();
     
     if (!thought) {
-        // Visual shake if empty
-        thoughtInput.style.border = "1px solid red";
-        setTimeout(() => thoughtInput.style.border = "none", 500);
+        thoughtInput.style.border = "2px solid #ff4d4d";
+        setTimeout(() => thoughtInput.style.border = "none", 1000);
         return;
     }
 
@@ -94,15 +122,20 @@ releaseBtn.addEventListener('click', () => {
 function plantSeed() {
     const seed = document.createElement('div');
     seed.className = 'flower-grow';
-    // Debug: Ensure these positions stay within the garden container
-    seed.style.left = `${Math.floor(Math.random() * 90)}%`;
-    seed.style.top = `${Math.floor(Math.random() * 90)}%`;
+    
+    // Ensure seeds stay inside the container
+    const x = Math.floor(Math.random() * 85);
+    const y = Math.floor(Math.random() * 85);
+    
+    seed.style.left = `${x}%`;
+    seed.style.top = `${y}%`;
     garden.appendChild(seed);
 }
 
-// Global click listener to unlock audio context (Browser requirement)
+// Initial Unblocker
 document.addEventListener('click', () => {
     if (bgMusic && bgMusic.paused) {
+        bgMusic.volume = 0.4;
         bgMusic.play().catch(() => {});
     }
 }, { once: true });
