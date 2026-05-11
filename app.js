@@ -1,11 +1,8 @@
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-// --- Configuration ---
-// Make sure to replace this with your actual API key from aistudio.google.com
 const API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// --- Selectors ---
 const releaseBtn = document.getElementById('release-btn');
 const thoughtInput = document.getElementById('thought-input');
 const aiResponseContainer = document.getElementById('ai-response-container');
@@ -15,46 +12,42 @@ const garden = document.getElementById('garden');
 const moodChips = document.querySelectorAll('.chip');
 
 let selectedMood = 'peaceful';
+let musicInterval; // Globally track interval to prevent overlap bugs
 
-/**
- * DEBUGGED: Audio Controller
- * Fixed: Added a check for 'canPlayType' and handled the volume transition safely.
- */
 function updateMusic(mood) {
     if (!bgMusic) return;
+    
+    // DEBUG: Clear any existing transitions to prevent volume stuttering
+    clearInterval(musicInterval);
 
-    // Smooth fade out
-    let volumeInterval = setInterval(() => {
+    // Fade out
+    musicInterval = setInterval(() => {
         if (bgMusic.volume > 0.05) {
             bgMusic.volume -= 0.05;
         } else {
             bgMusic.volume = 0;
-            clearInterval(volumeInterval);
+            clearInterval(musicInterval);
             
-            // Change Source
             bgMusic.src = `assets/music/${mood}.mp3`;
             bgMusic.load();
             
             const playPromise = bgMusic.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    // Smooth fade in
-                    let fadeIn = setInterval(() => {
+                    // Fade in
+                    musicInterval = setInterval(() => {
                         if (bgMusic.volume < 0.4) {
                             bgMusic.volume += 0.05;
                         } else {
-                            clearInterval(fadeIn);
+                            clearInterval(musicInterval);
                         }
                     }, 50);
-                }).catch(error => {
-                    console.warn("User interaction required for audio swap.");
-                });
+                }).catch(err => console.warn("Interacted needed for audio swap."));
             }
         }
-    }, 500);
+    }, 50); // Faster interval for smoother feel
 }
 
-// Mood selection chips
 moodChips.forEach(chip => {
     chip.addEventListener('click', () => {
         moodChips.forEach(c => c.classList.remove('active'));
@@ -64,35 +57,32 @@ moodChips.forEach(chip => {
     });
 });
 
-/**
- * AI TOOL: Music & Response Integration
- * Now the AI determines if the music should change to "healing" after the response.
- */
 async function generateAIResponse(userInput, mood) {
+    // DEBUG: Ensure container is visible before AI finishes
     aiResponseContainer.classList.remove('hidden');
-    aiText.innerText = "Listening to the earth's whisper...";
+    aiResponseContainer.style.display = "block"; // Force override
+    aiText.innerText = "The earth is listening...";
 
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        // System prompt updated to include a "sentiment tag" for the music tool
         const prompt = `You are a nature-based healing guide. 
-        A user is feeling ${mood} and says: "${userInput}". 
-        1. Provide a short, 2-sentence poetic reframe using nature metaphors.
-        2. End with a single bracketed word indicating the 'new' mood (e.g., [peaceful], [calm], [renewed]).`;
+        The user feels ${mood} and says: "${userInput}". 
+        1. Provide a 1-sentence poetic reframe using nature metaphors.
+        2. End with [peaceful] if the thought was released.`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
         let text = response.text();
 
-        // Parse logic: Extract the [mood] and update the music automatically
-        if (text.includes('[')) {
-            const suggestedMood = text.match(/\[(.*?)\]/)[1];
-            text = text.replace(/\[.*?\]/g, ""); // Clean the text for the user
+        // DEBUG: Improved Regex to find the mood tag more reliably
+        const moodMatch = text.match(/\[(.*?)\]/);
+        if (moodMatch) {
+            const suggested = moodMatch[1];
+            text = text.replace(/\[.*?\]/g, "").trim();
             
-            // Logic: If the AI thinks the user is ready, shift the music to 'peaceful'
-            if (suggestedMood === 'peaceful' || suggestedMood === 'renewed') {
-                setTimeout(() => updateMusic('peaceful'), 2000);
+            if (suggested === 'peaceful') {
+                setTimeout(() => updateMusic('peaceful'), 1000);
             }
         }
 
@@ -100,19 +90,13 @@ async function generateAIResponse(userInput, mood) {
 
     } catch (error) {
         console.error("AI Error:", error);
-        aiText.innerText = "The wind is quiet right now. Take a deep breath and stay here.";
+        aiText.innerText = "The garden remains still. Take a breath.";
     }
 }
 
-// --- Interaction Logic ---
 releaseBtn.addEventListener('click', () => {
     const thought = thoughtInput.value.trim();
-    
-    if (!thought) {
-        thoughtInput.style.border = "2px solid #ff4d4d";
-        setTimeout(() => thoughtInput.style.border = "none", 1000);
-        return;
-    }
+    if (!thought) return;
 
     plantSeed();
     generateAIResponse(thought, selectedMood);
@@ -122,17 +106,11 @@ releaseBtn.addEventListener('click', () => {
 function plantSeed() {
     const seed = document.createElement('div');
     seed.className = 'flower-grow';
-    
-    // Ensure seeds stay inside the container
-    const x = Math.floor(Math.random() * 85);
-    const y = Math.floor(Math.random() * 85);
-    
-    seed.style.left = `${x}%`;
-    seed.style.top = `${y}%`;
+    seed.style.left = `${Math.random() * 85}%`;
+    seed.style.top = `${Math.random() * 85}%`;
     garden.appendChild(seed);
 }
 
-// Initial Unblocker
 document.addEventListener('click', () => {
     if (bgMusic && bgMusic.paused) {
         bgMusic.volume = 0.4;
