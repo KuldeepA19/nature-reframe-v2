@@ -3,82 +3,269 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nature Reframe</title>
-  <!-- Ensure style.css is in the same folder as this file -->
-  <link rel="stylesheet" href="style.css" />
+  <title>Nature Reframe — Breathe, Release & Heal</title>
+  <meta name="description" content="A safe place to breathe, release your emotions, and heal through the power of nature. AI-powered healing companion." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Puter.js: free unlimited Claude AI, zero API key, zero cost -->
+  <script src="https://js.puter.com/v2/"></script>
+
+  <style>
+    :root {
+      --green-deep: #0a3d2b;
+      --green-mid: #1D9E75;
+      --green-light: #a8d5be;
+      --green-pale: #e8f5ee;
+      --cream: #faf8f3;
+      --text-dark: #1a2e22;
+      --text-mid: #4a6358;
+      --text-light: #7a9e8a;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 10% 20%, rgba(29,158,117,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, rgba(29,158,117,0.04) 0%, transparent 50%);
+    }
+    .container { max-width: 520px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* Header */
+    header { text-align: center; margin-bottom: 2.5rem; padding-top: 1rem; }
+    .leaf-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+    header h1 { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; color: var(--green-deep); }
+    header p { font-size: 0.9rem; color: var(--text-mid); margin-top: 0.4rem; font-weight: 300; }
+    .souls { display: inline-flex; align-items: center; gap: 6px; margin-top: 0.75rem; background: var(--green-pale); border: 1px solid var(--green-light); border-radius: 999px; padding: 4px 14px; font-size: 0.8rem; color: var(--text-mid); }
+    .souls-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-mid); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+    /* Cards */
+    .card { background: white; border: 1px solid rgba(29,158,117,0.12); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 20px rgba(10,61,43,0.04); }
+    .card-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 0.85rem; }
+
+    /* Emotions */
+    .emotions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .emotion-btn { padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(29,158,117,0.2); background: var(--cream); font-family: var(--sans); font-size: 0.85rem; color: var(--text-mid); cursor: pointer; transition: all 0.2s ease; }
+    .emotion-btn:hover { border-color: var(--green-mid); background: var(--green-pale); color: var(--green-deep); }
+    .emotion-btn.active { background: var(--green-mid); border-color: var(--green-mid); color: white; }
+
+    /* Reflection */
+    .reflection-area { margin-top: 1rem; }
+    textarea { width: 100%; min-height: 90px; border: 1px solid rgba(29,158,117,0.15); border-radius: 10px; padding: 12px 14px; font-family: var(--sans); font-size: 0.9rem; color: var(--text-dark); background: var(--cream); resize: none; line-height: 1.6; transition: border-color 0.2s; }
+    textarea:focus { outline: none; border-color: var(--green-mid); background: white; }
+    textarea::placeholder { color: var(--text-light); }
+
+    .release-btn { width: 100%; padding: 13px; margin-top: 12px; background: var(--green-deep); color: white; border: none; border-radius: 10px; font-family: var(--sans); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+    .release-btn:hover:not(:disabled) { background: var(--green-mid); transform: translateY(-1px); }
+    .release-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .ai-response { margin-top: 1rem; padding: 1rem 1.1rem; background: var(--green-pale); border: 1px solid rgba(29,158,117,0.2); border-radius: 10px; font-family: var(--serif); font-size: 1.1rem; color: var(--green-deep); line-height: 1.8; display: none; }
+    .ai-response.loading { font-family: var(--sans); font-size: 0.85rem; color: var(--text-light); font-style: italic; }
+
+    /* Breathe */
+    .breathe-center { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .breathe-ring { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--green-mid); display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: var(--serif); font-size: 1rem; color: var(--green-deep); background: white; transition: background 0.3s; }
+    .breathe-ring:hover { background: var(--green-pale); }
+    .breathe-ring.inhale { animation: breathe 8s ease-in-out infinite; }
+    @keyframes breathe { 0%,100%{transform:scale(1);border-color:var(--green-mid)} 25%,50%{transform:scale(1.28);border-color:var(--green-deep)} 75%{transform:scale(1);border-color:var(--green-mid)} }
+    .breathe-phase { font-size: 0.85rem; color: var(--text-mid); text-align: center; min-height: 1.2em; }
+
+    /* Music */
+    .track-list { display: flex; flex-direction: column; gap: 8px; }
+    .track { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(29,158,117,0.1); cursor: pointer; transition: all 0.18s ease; background: var(--cream); }
+    .track:hover { background: var(--green-pale); border-color: rgba(29,158,117,0.25); }
+    .track.playing { background: var(--green-pale); border-color: var(--green-mid); }
+    .track-emoji { font-size: 1.3rem; flex-shrink: 0; width: 28px; text-align: center; }
+    .track-info { flex: 1; }
+    .track-name { font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
+    .track-mood { font-size: 0.77rem; color: var(--text-light); margin-top: 1px; }
+    .track-status { font-size: 0.78rem; color: var(--green-mid); font-weight: 500; }
+    .vol-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+    .vol-label { font-size: 0.8rem; color: var(--text-light); flex-shrink: 0; }
+    input[type=range] { flex: 1; -webkit-appearance: none; height: 3px; border-radius: 999px; background: var(--green-light); outline: none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--green-mid); cursor: pointer; }
+
+    footer { text-align: center; margin-top: 2rem; font-size: 0.78rem; color: var(--text-light); line-height: 1.8; }
+  </style>
 </head>
-
 <body>
-  <div class="app-container">
+<div class="container">
 
-    <header class="header">
-      <div class="status-bar">
-        <span class="pulse"></span>
-        <span id="community-count">14,202 souls breathing with you</span>
-      </div>
-      <h1>Nature Reframe</h1>
-      <p class="subtitle">A safe place to breathe, release, and heal.</p>
-    </header>
+  <header>
+    <span class="leaf-icon">🌿</span>
+    <h1>Nature Reframe</h1>
+    <p>A safe place to breathe, release, and heal.</p>
+    <div class="souls">
+      <div class="souls-dot"></div>
+      <span id="souls-count">14,202 souls breathing with you</span>
+    </div>
+  </header>
 
-    <main class="main-content">
-      <!-- Garden -->
-      <section class="garden-section">
-        <div class="garden-area" id="garden"></div>
-      </section>
-
-      <!-- AI RESPONSE -->
-      <section id="ai-response-container" class="ai-response hidden">
-        <div class="ai-card">
-          <h3>Nature Reflection</h3>
-          <p id="ai-text"></p>
-        </div>
-      </section>
-
-      <!-- Interaction -->
-      <section class="interaction-card">
-        <h2 id="mood-prompt">What is weighing on your heart?</h2>
-        <div class="mood-chips">
-          <button class="chip" data-mood="angry">Anger</button>
-          <button class="chip" data-mood="stressed">Stress</button>
-          <button class="chip" data-mood="lonely">Loneliness</button>
-          <button class="chip" data-mood="anxious">Anxiety</button>
-        </div>
-        <textarea id="thought-input" placeholder="Release your thought into the soil..."></textarea>
-        <button id="release-btn" class="btn-primary">Plant & Release</button>
-      </section>
-
-      <!-- Breathing -->
-      <section class="breathing-section">
-        <h3>Breathe Slowly</h3>
-        <div class="breathing-circle">Breathe</div>
-      </section>
-    </main>
-
-    <button id="calm-btn">Calm</button>
-
-    <nav class="bottom-tabs">
-      <button class="tab-item active">🌿</button>
-      <button class="tab-item">🎵</button>
-      <button class="tab-item">✨</button>
-      <button class="tab-item">📓</button>
-    </nav>
+  <div class="card">
+    <div class="card-label">How are you feeling?</div>
+    <div class="emotions">
+      <button class="emotion-btn" data-emotion="Anger">😤 Anger</button>
+      <button class="emotion-btn" data-emotion="Stress">😰 Stress</button>
+      <button class="emotion-btn" data-emotion="Loneliness">💙 Loneliness</button>
+      <button class="emotion-btn" data-emotion="Anxiety">😟 Anxiety</button>
+      <button class="emotion-btn" data-emotion="Grief">🌧 Grief</button>
+      <button class="emotion-btn" data-emotion="Overwhelm">🌊 Overwhelm</button>
+    </div>
+    <div class="reflection-area">
+      <textarea id="reflection" placeholder="What is weighing on your heart? Share as little or as much as you like..."></textarea>
+      <button class="release-btn" id="release-btn" onclick="plantAndRelease()">🌱 Plant & Release</button>
+      <div class="ai-response" id="ai-response"></div>
+    </div>
   </div>
 
-  <!-- Music element for Mood-based audio -->
-  <audio id="bg-music" loop></audio>
+  <div class="card">
+    <div class="card-label">Breathe with nature</div>
+    <div class="breathe-center">
+      <div class="breathe-ring" id="breathe-ring" onclick="toggleBreathe()">Breathe</div>
+      <div class="breathe-phase" id="breathe-phase">Tap to begin</div>
+    </div>
+  </div>
 
-  <!-- IMPORTANT: Must be type="module" for the AI SDK to work -->
-  <script type="module" src="app.js"></script>
-</body>
-</html>
-<!-- ... rest of your HTML above ... -->
+  <div class="card">
+    <div class="card-label">Ambient Sounds</div>
+    <div class="track-list">
+      <div class="track" data-url="https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3" onclick="playTrack(this,0)">
+        <div class="track-emoji">🌧</div>
+        <div class="track-info"><div class="track-name">Forest Rain</div><div class="track-mood">For stress & anger</div></div>
+        <div class="track-status" id="status-0"></div>
+      </div>
+      <div class="track" data-url="https://cdn.pixabay.com/audio/2022/03/10/audio_2dde668d05.mp3" onclick="playTrack(this,1)">
+        <div class="track-emoji">🌊</div>
+        <div class="track-info"><div class="track-name">Ocean Waves</div><div class="track-mood">For anxiety & overwhelm</div></div>
+        <div class="track-status" id="status-1"></div>
+      </div>
+      <div class="track" data-url="https://cdn.pixabay.com/audio/2022/06/07/audio_b9bf3be5c3.mp3" onclick="playTrack(this,2)">
+        <div class="track-emoji">🐦</div>
+        <div class="track-info"><div class="track-name">Singing Birds</div><div class="track-mood">For loneliness & grief</div></div>
+        <div class="track-status" id="status-2"></div>
+      </div>
+      <div class="track" data-url="https://cdn.pixabay.com/audio/2021/09/06/audio_e29a4f15d8.mp3" onclick="playTrack(this,3)">
+        <div class="track-emoji">🌙</div>
+        <div class="track-info"><div class="track-name">Night Crickets</div><div class="track-mood">For sleeplessness & worry</div></div>
+        <div class="track-status" id="status-3"></div>
+      </div>
+    </div>
+    <div class="vol-row">
+      <span class="vol-label">🔈 Volume</span>
+      <input type="range" min="0" max="100" value="60" step="1" id="volume" oninput="setVolume(this.value)">
+      <span class="vol-label" id="vol-num">60%</span>
+    </div>
+  </div>
 
-    <!-- THE AUDIO PLAYER (Hidden) -->
-    <audio id="bg-music" loop>
-        <source src="assets/music/peaceful.mp3" type="audio/mpeg">
-    </audio>
+  <footer>
+    Made with 🌿 love &amp; calm<br>
+    Nature Reframe &copy; 2025 — Free forever
+  </footer>
 
-    <!-- THE BRAIN (Your JavaScript) -->
-    <script type="module" src="app.js"></script> 
+</div>
+<script>
+  let selectedEmotion = '';
+  let audio = null;
+  let currentTrackEl = null;
+  let breatheActive = false;
+  let breatheTimer = null;
+
+  document.querySelectorAll('.emotion-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedEmotion = btn.dataset.emotion;
+    });
+  });
+
+  async function plantAndRelease() {
+    const text = document.getElementById('reflection').value.trim();
+    if (!selectedEmotion && !text) {
+      alert('Please select how you feel, or share what\'s on your heart.');
+      return;
+    }
+    const btn = document.getElementById('release-btn');
+    const responseEl = document.getElementById('ai-response');
+    btn.disabled = true;
+    btn.textContent = '🌱 The forest is listening...';
+    responseEl.style.display = 'block';
+    responseEl.className = 'ai-response loading';
+    responseEl.textContent = 'Finding words from the forest...';
+
+    const prompt = `You are a gentle, nature-inspired healing companion for "Nature Reframe".
+The user feels: ${selectedEmotion || 'unsure'}.
+${text ? `They shared: "${text}"` : ''}
+Reply with 3-4 warm, poetic sentences using a nature metaphor (trees, rivers, rain, roots, seasons, light).
+No clinical advice. End with one simple calming action they can do right now.`;
+
+    try {
+      const response = await puter.ai.chat(prompt, { model: 'claude-sonnet-4-6' });
+      const message = typeof response === 'string' ? response
+        : response?.message?.content?.[0]?.text
+        || response?.content?.[0]?.text
+        || response?.text
+        || 'Like roots in a storm, you are held. Take one slow breath now.';
+      responseEl.className = 'ai-response';
+      responseEl.textContent = message;
+      const n = 14202 + Math.floor(Math.random() * 5) + 1;
+      document.getElementById('souls-count').textContent = n.toLocaleString() + ' souls breathing with you';
+    } catch (e) {
+      responseEl.className = 'ai-response';
+      responseEl.textContent = 'Like roots in a storm, you are held. Take one slow breath — in through the nose, out through the mouth. You are safe here.';
+    }
+    btn.disabled = false;
+    btn.textContent = '🌱 Plant & Release';
+  }
+
+  function playTrack(el, idx) {
+    if (currentTrackEl === el && audio && !audio.paused) {
+      audio.pause();
+      el.classList.remove('playing');
+      document.getElementById('status-' + idx).textContent = '';
+      currentTrackEl = null;
+      return;
+    }
+    if (audio) audio.pause();
+    document.querySelectorAll('.track').forEach(t => t.classList.remove('playing'));
+    [0,1,2,3].forEach(i => { const s = document.getElementById('status-'+i); if(s) s.textContent=''; });
+    audio = new Audio(el.dataset.url);
+    audio.volume = document.getElementById('volume').value / 100;
+    audio.loop = true;
+    audio.play().catch(()=>{});
+    el.classList.add('playing');
+    document.getElementById('status-' + idx).textContent = '▶ playing';
+    currentTrackEl = el;
+  }
+
+  function setVolume(v) {
+    document.getElementById('vol-num').textContent = v + '%';
+    if (audio) audio.volume = v / 100;
+  }
+
+  function toggleBreathe() {
+    const ring = document.getElementById('breathe-ring');
+    const phase = document.getElementById('breathe-phase');
+    breatheActive = !breatheActive;
+    if (breatheActive) {
+      ring.classList.add('inhale');
+      const phases = [{text:'Breathe in...',ms:4000},{text:'Hold...',ms:4000},{text:'Breathe out slowly...',ms:6000},{text:'Rest...',ms:2000}];
+      let i = 0;
+      function next() { phase.textContent = phases[i%phases.length].text; breatheTimer = setTimeout(next, phases[i%phases.length].ms); i++; }
+      next();
+    } else {
+      ring.classList.remove('inhale');
+      phase.textContent = 'Tap to begin';
+      clearTimeout(breatheTimer);
+    }
+  }
+</script>
 </body>
 </html>
