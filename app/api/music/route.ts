@@ -15,6 +15,6 @@ export async function POST(req: Request) {
   });
 
   const data = await response.json();
-  // We return the raw base64 audio data
+  // Returns base64 audio data
   return NextResponse.json({ audio: data.candidates[0].content.parts[0].inlineData.data });
 }
